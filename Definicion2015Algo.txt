@@ -1,0 +1,41 @@
+Definición del Proyecto
+Desarrolle un sistema que permita llevar el control sobre evaluaciones del desempeño realizadas por una empresa. Estos resultados serán empleados para saber en qué áreas debe mejorar sus empleados y establecer programas para mejorar estos aspectos. Asimismo servirá para identificar candidatos para posteriores ascensos de acuerdo a desempeño y perfiles. 
+Desarrollar un sistema utilizando implementando el lenguaje C++ que incluya los siguientes módulos:
+
+Mantenimientos Generales
+- Empresa: Datos de la empresa
+- Departamentos o Divisiones de la empresa: Descripción de la división
+- Puestos: Descripción del puesto
+- Perfil del puesto: Listado de características por puesto
+- Empleados: Datos del empleado.
+- Evaluación: Datos generales de la evaluación ya que las áreas ya aspectos por área se
+- incluyen en los 2 puntos siguientes.
+- Aéreas a Evaluar: Interesa el nombre y descripción de cada área que se evaluará
+- Aspectos a Evaluar: Detalle de las características que se incluyen dentro de cada área que se evaluará.
+- Escala de evaluación por cada aspecto:
+- Puede ser: Siempre, algunas veces, nunca y cada una tiene un porcentaje de puntuación.
+
+Evaluación
+Ingreso de la evaluación
+Debe seleccionarse el empleado y a continuación ingresar el detalle de la evaluación.
+Listado:
+Listado de Empleados con el detalle de la calificación obtenida en cada aspecto y el total alcanzado en la evaluación.
+Listado de Empleados con notas mayores o igual a 80, debe indicarse el perfil.
+Listado de Empleados con notas abajo de 80, debe indicarse el perfil.
+Listado de Empleados por Departamento con su respectiva nota obtenida
+
+Seguridad:
+Se debe definir un modulo de seguridad el cual maneje 3 Roles:
+
+1) Ingreso de información a mantenimientos generales.
+2) Consultas: Tendrá acceso a las opciones reportes o listados.
+3) Acceso a ingreso de la evaluación por empleado.
+Observaciones: Para el desarrollo del proyecto debe realizar una investigación que amplié el conocimiento adquirido con lo cual le brinde un valor agregado al proyecto.
+Debe agregar todos los aspectos que considere necesarios para el análisis y desarrollo del proyecto.
+Debe entregar un CD conteniendo la documentación técnica y de usuario y otro con los fuentes de la aplicación.
+
+Nota:
+Todos los detalles que no se encuentran definidos en este documento se dejan a discreción del estudiante, considerando que debe emplear todos los puntos vistos en clase y a la vez ser creativos e investigar para poder presentar un proyecto con excelencia, ya que todo esto será considerado para definir la nota de su proyecto.
+La información debe guardarse permanentemente.
+
+
