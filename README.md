@@ -6,7 +6,6 @@ Autores:
 
 | Nombre | Carnet |
 | :--- | ---: |
-| Mario Soto Ovalle | 900-15-16795 | $1600 |
-
+| Mario Soto Ovalle | 900-15-16795 |
 | Jonnathan Luis F. Aldana Ruano | 900-14-22577 |
 
