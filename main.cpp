@@ -2,6 +2,9 @@
 
 using namespace std;
 
+// Crear funciones aqui
+
+
 int main()
 {
     cout << "Hello world!" << endl;
