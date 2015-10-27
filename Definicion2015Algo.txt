@@ -1,4 +1,4 @@
-Definición del Proyecto
+﻿Definición del Proyecto
 Desarrolle un sistema que permita llevar el control sobre evaluaciones del desempeño realizadas por una empresa. Estos resultados serán empleados para saber en qué áreas debe mejorar sus empleados y establecer programas para mejorar estos aspectos. Asimismo servirá para identificar candidatos para posteriores ascensos de acuerdo a desempeño y perfiles. 
 Desarrollar un sistema utilizando implementando el lenguaje C++ que incluya los siguientes módulos:
 
@@ -10,6 +10,8 @@ Mantenimientos Generales
 - Empleados: Datos del empleado.
 - Evaluación: Datos generales de la evaluación ya que las áreas ya aspectos por área se
 - incluyen en los 2 puntos siguientes.
+
+
 - Aéreas a Evaluar: Interesa el nombre y descripción de cada área que se evaluará
 - Aspectos a Evaluar: Detalle de las características que se incluyen dentro de cada área que se evaluará.
 - Escala de evaluación por cada aspecto:

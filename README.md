@@ -1,4 +1,4 @@
-# Universidad Mariano Galvez 2015
+﻿# Universidad Mariano Galvez 2015
 ## Proyecto Algoritmos Sección F
 
 
@@ -8,4 +8,5 @@ Autores:
 | :--- | ---: |
 | Mario Soto Ovalle | 900-15-16795 | $1600 |
 
+| Jonnathan Luis F. Aldana Ruano | 900-14-22577 |
 
