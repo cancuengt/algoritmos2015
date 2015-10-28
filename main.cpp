@@ -9,14 +9,14 @@ void menuEmpresa ()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Mantenimiento de Empresa" << endl;
         cout << "------------------------" << endl;
         cout << "  1- Modificar datos de la empresa" << endl;
         cout << "  2- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!menu) {
             case 1: // Modificar datos de la empresa
                 break;
             case 2:
@@ -34,7 +34,7 @@ void menuDepartamentos ()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Mantenimiento de Departamentos" << endl;
         cout << "------------------------------" << endl;
         cout << "  1- Listar departamentos" << endl;
@@ -42,9 +42,9 @@ void menuDepartamentos ()
         cout << "  3- Modificar departamento" << endl;
         cout << "  4- Eliminar departamento" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!salir) {
             case 1: // Listar
                 break;
             case 2: // Agregar
@@ -68,7 +68,7 @@ void menuTrabajo ()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Mantenimiento de Puestos de Trabajo" << endl;
         cout << "-----------------------------------" << endl;
         cout << "  1- Listar puestos de trabajo" << endl;
@@ -76,9 +76,9 @@ void menuTrabajo ()
         cout << "  3- Modificar puesto de trabajo" << endl;
         cout << "  4- Eliminar puesto de trabajo" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!salir) {
             case 1: // Listar
                 break;
             case 2: // Agregar
@@ -102,7 +102,7 @@ void menuEmpleados ()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Mantenimiento de Empleados" << endl;
         cout << "--------------------------" << endl;
         cout << "  1- Listar empleados" << endl;
@@ -110,9 +110,9 @@ void menuEmpleados ()
         cout << "  3- Modificar empleado" << endl;
         cout << "  4- Eliminar empleado" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!salir) {
             case 1: // Listar
                 break;
             case 2: // Agregar
@@ -136,7 +136,7 @@ void menuEvaluacion()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Mantenimiento de Evaluación de Trabajo" << endl;
         cout << "--------------------------------------" << endl;
         cout << "  1- Listar items de evaluación" << endl;
@@ -144,9 +144,9 @@ void menuEvaluacion()
         cout << "  3- Modificar item de evaluación" << endl;
         cout << "  4- Eliminar item de evaluación" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!salir) {
             case 1: // Listar
                 break;
             case 2: // Agregar
@@ -170,16 +170,16 @@ void menuEvaluar ()
     int menu;
 
     while (!salir) {
-        cout << endl <<< endl <<< endl;
+        cout << endl << endl << endl;
         cout << "Evaluación de desempeño" << endl;
         cout << "-----------------------------------" << endl;
         cout << "  1- Evaluar un empleado" << endl;
         cout << "  2- Evaluar por departamentos" << endl;
         cout << "  3- Evaluar todos los empleados" << endl;
         cout << "  4- Salir" << endl;
-        cout << "Seleccione una opción: "
+        cout << "Seleccione una opción: ";
         cin >> menu;
-        while (!salir) {
+        switch (!salir) {
             case 1: // Evaluar empleado
                 break;
             case 2: // Evaluar por departamento
@@ -193,6 +193,19 @@ void menuEvaluar ()
                 cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
+}
+
+void informacion ()
+{
+    cout << endl << endl << endl;
+    cout << "Proyecto Algoritmos Sección F 2015" << endl << endl;
+    cout << "Acerca de..." << endl;
+    cout << "+---------------------------------------------+" << endl;
+    cout << "| Nombre                      | Carnet        |" << endl;
+    cout << "+---------------------------------------------+" << endl;
+    cout << "| Mario Soto Ovalle           | 900-15-16795  |" << endl;
+    cout << "+---------------------------------------------+" << endl;
+    cout << endl << endl;
 }
 
 int main()
@@ -211,7 +224,8 @@ int main()
         cout << "  4) Empleados" << endl;
         cout << "  5) Evaluaciones" << endl;
         cout << "  6) Evaluación de empleados" << endl;
-        cout << "  7) Salir" << endl;
+        cout << "  7) Evaluación de empleados" << endl;
+        cout << "  8) Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
 
@@ -234,15 +248,17 @@ int main()
             case 6: // Evaluación de empleados
                 menuEvaluar();
                 break;
-            case 7:  // Salir
+            case 7: // Evaluación de empleados
+                informacion();
+                break;
+            case 8:  // Salir
                 salir = 1; // Verdadero
                 break;
             default:
                 cout << "*** Opición inválida ***" << endl << endl;
-
         }
     }
-
-
     return 0;
 }
+
+
