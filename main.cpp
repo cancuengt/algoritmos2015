@@ -1,7 +1,16 @@
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
+
+void openDBfile (string nombre, fstream &archivo) {
+    archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary);
+    if (!archivo.is_open()) {
+        // Si el archivo no está abierto lo crea, lo
+        archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary | ios::trunc);
+    }
+}
 
 void menuEmpresa ()
 {
