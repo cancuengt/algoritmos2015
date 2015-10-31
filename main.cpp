@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstring>
-#include <string>
 #include <fstream>
 #include <limits>
 
@@ -63,7 +62,7 @@ void modificarEmpresa (fstream &fEmpresa)
         empresa.nit[sizeof(empresa.nit)-1] = '\0';
 
     } else {
-        fEmpresa.seekg (0); // Ir a la posicion inicial
+        fEmpresa.seekg (0);
         fEmpresa.read(reinterpret_cast<char *>(&empresa), sizeof(Empresa));
         cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
         cout << "Nombre (\"" << empresa.nombre << "\"): ";
