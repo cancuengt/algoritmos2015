@@ -1,7 +1,15 @@
 #include <iostream>
+#include <cstring>
+#include <string>
 #include <fstream>
+#include <limits>
 
 using namespace std;
+
+    struct Empresa {
+        char nombre[100];
+        char nit[15];
+    };
 
 
 void openDBfile (string nombre, fstream &archivo) {
@@ -12,7 +20,72 @@ void openDBfile (string nombre, fstream &archivo) {
     }
 }
 
-void menuEmpresa ()
+void verEmpresa(fstream &fEmpresa)
+{
+    Empresa empresa;
+
+    cout << endl << "Datos de la empresa:" << endl;
+    cout << "--------------------" << endl;
+
+    fEmpresa.seekg (0, ios::end);
+    if (fEmpresa.tellg() == 0) {
+        cout << "¡No hay empresa registrada!" << endl;
+    } else {
+        fEmpresa.seekg (0);
+        fEmpresa.read(reinterpret_cast<char *>(&empresa), sizeof(Empresa));
+        cout << "Nombre: " << empresa.nombre << endl;
+        cout << "NIT: " << empresa.nit << endl << endl << endl;
+    }
+}
+
+void modificarEmpresa (fstream &fEmpresa)
+{
+
+    Empresa empresa;
+    string valor;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEmpresa.seekg (0, ios::end);
+    if (fEmpresa.tellg() == 0) {
+        cout << "¡No hay empresa registrada!" << endl;
+        cout << "Ingresar los datos de la empresa: " << endl;
+
+        cout << "Nombre: ";
+        getline(cin,valor);
+        strncpy(empresa.nombre,valor.c_str(),sizeof(empresa.nombre));
+        empresa.nombre[sizeof(empresa.nombre)-1] = '\0';
+
+        cout << "NIT: ";
+        getline(cin,valor);
+        strncpy(empresa.nit,valor.c_str(),sizeof(empresa.nit));
+        empresa.nit[sizeof(empresa.nit)-1] = '\0';
+
+    } else {
+        fEmpresa.seekg (0); // Ir a la posicion inicial
+        fEmpresa.read(reinterpret_cast<char *>(&empresa), sizeof(Empresa));
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
+        cout << "Nombre (\"" << empresa.nombre << "\"): ";
+        getline(cin,valor);
+        if(valor.length()){
+            strncpy(empresa.nombre,valor.c_str(),sizeof(empresa.nombre));
+            empresa.nombre[sizeof(empresa.nombre)-1] = '\0';
+        }
+        cout << "NIT (\"" << empresa.nit << "\"): ";
+        getline(cin,valor);
+        if(valor.length()){
+            strncpy(empresa.nit,valor.c_str(),sizeof(empresa.nit));
+            empresa.nit[sizeof(empresa.nit)-1] = '\0';
+        }
+    }
+
+    fEmpresa.seekg (0);
+    fEmpresa.write(reinterpret_cast<char *>(&empresa), sizeof(Empresa));
+    cout << "Datos escritos" << endl << endl;
+}
+
+void menuEmpresa (fstream &fEmpresa)
 {
     int salir = 0;
     int menu;
@@ -22,13 +95,18 @@ void menuEmpresa ()
         cout << "Mantenimiento de Empresa" << endl;
         cout << "------------------------" << endl;
         cout << "  1- Modificar datos de la empresa" << endl;
-        cout << "  2- Salir" << endl;
+        cout << "  2- Ver datos de la empresa" << endl;
+        cout << "  3- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!menu) {
+        switch (menu) {
             case 1: // Modificar datos de la empresa
+                modificarEmpresa(fEmpresa);
                 break;
-            case 2:
+            case 2: // Modificar datos de la empresa
+                verEmpresa(fEmpresa);
+                break;
+            case 3:
                 salir = 1;
                 break;
             default:
@@ -222,6 +300,12 @@ int main()
     int salir = 0; // Salir del sistema
     int menu;
 
+    // Variables de archivos
+    fstream fEmpresa;
+
+    // Abrir archivo como base de datos
+    openDBfile("empresa.db",fEmpresa);
+
     while (!salir) {
         cout << endl << endl << endl;
         cout << "Proyecto Algoritmos Sección F 2015" << endl;
@@ -240,7 +324,7 @@ int main()
 
         switch (menu) {
             case 1: // Datos de empresa
-                menuEmpresa();
+                menuEmpresa(fEmpresa);
                 break;
             case 2: // Departamentos
                 menuDepartamentos();
