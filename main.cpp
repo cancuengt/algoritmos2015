@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cstring>
 #include <fstream>
 #include <limits>
@@ -18,7 +18,7 @@ using namespace std;
 void openDBfile (string nombre, fstream &archivo) {
     archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary);
     if (!archivo.is_open()) {
-        // Si el archivo no estÃ¡ abierto lo crea, lo
+        // Si el archivo no está abierto lo crea
         archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary | ios::trunc);
     }
 }
@@ -32,7 +32,7 @@ void verEmpresa(fstream &fEmpresa)
 
     fEmpresa.seekg (0, ios::end);
     if (fEmpresa.tellg() == 0) {
-        cout << "Â¡No hay empresa registrada!" << endl;
+        cout << "¡No hay empresa registrada!" << endl;
     } else {
         fEmpresa.seekg (0);
         fEmpresa.read(reinterpret_cast<char *>(&empresa), sizeof(Empresa));
@@ -52,7 +52,7 @@ void modificarEmpresa (fstream &fEmpresa)
 
     fEmpresa.seekg (0, ios::end);
     if (fEmpresa.tellg() == 0) {
-        cout << "Â¡No hay empresa registrada!" << endl;
+        cout << "¡No hay empresa registrada!" << endl;
         cout << "Ingresar los datos de la empresa: " << endl;
 
         cout << "Nombre: ";
@@ -100,7 +100,7 @@ void menuEmpresa (fstream &fEmpresa)
         cout << "  1- Modificar datos de la empresa" << endl;
         cout << "  2- Ver datos de la empresa" << endl;
         cout << "  3- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (menu) {
             case 1: // Modificar datos de la empresa
@@ -113,7 +113,7 @@ void menuEmpresa (fstream &fEmpresa)
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -132,7 +132,7 @@ void menuDepartamentos ()
         cout << "  3- Modificar departamento" << endl;
         cout << "  4- Eliminar departamento" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (!salir) {
             case 1: // Listar
@@ -166,7 +166,7 @@ void menuTrabajo ()
         cout << "  3- Modificar puesto de trabajo" << endl;
         cout << "  4- Eliminar puesto de trabajo" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (!salir) {
             case 1: // Listar
@@ -181,7 +181,7 @@ void menuTrabajo ()
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -291,7 +291,7 @@ void menuEmpleados ()
         cout << "  3- Modificar empleado" << endl;
         cout << "  4- Eliminar empleado" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (!salir) {
             case 1: // Vizualizar datos de empleados
@@ -309,7 +309,7 @@ void menuEmpleados ()
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -321,14 +321,14 @@ void menuEvaluacion()
 
     while (!salir) {
         cout << endl << endl << endl;
-        cout << "Mantenimiento de EvaluaciÃ³n de Trabajo" << endl;
+        cout << "Mantenimiento de Evaluación de Trabajo" << endl;
         cout << "--------------------------------------" << endl;
-        cout << "  1- Listar items de evaluaciÃ³n" << endl;
-        cout << "  2- Agregar item de evaluaciÃ³n" << endl;
-        cout << "  3- Modificar item de evaluaciÃ³n" << endl;
-        cout << "  4- Eliminar item de evaluaciÃ³n" << endl;
+        cout << "  1- Listar items de evaluación" << endl;
+        cout << "  2- Agregar item de evaluación" << endl;
+        cout << "  3- Modificar item de evaluación" << endl;
+        cout << "  4- Eliminar item de evaluación" << endl;
         cout << "  5- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (!salir) {
             case 1: // Listar
@@ -343,7 +343,7 @@ void menuEvaluacion()
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -355,13 +355,13 @@ void menuEvaluar ()
 
     while (!salir) {
         cout << endl << endl << endl;
-        cout << "EvaluaciÃ³n de desempeÃ±o" << endl;
+        cout << "Evaluación de desempeño" << endl;
         cout << "-----------------------------------" << endl;
         cout << "  1- Evaluar un empleado" << endl;
         cout << "  2- Evaluar por departamentos" << endl;
         cout << "  3- Evaluar todos los empleados" << endl;
         cout << "  4- Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
         switch (!salir) {
             case 1: // Evaluar empleado
@@ -374,7 +374,7 @@ void menuEvaluar ()
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -382,14 +382,15 @@ void menuEvaluar ()
 void informacion ()
 {
     cout << endl << endl << endl;
-    cout << "Proyecto Algoritmos SecciÃ³n F 2015" << endl << endl;
+    cout << "Proyecto Algoritmos Sección F 2015" << endl << endl;
     cout << "Acerca de..." << endl;
-    cout << "+---------------------------------------------+" << endl;
-    cout << "| Nombre                      | Carnet        |" << endl;
-    cout << "+---------------------------------------------+" << endl;
-    cout << "| Mario Soto Ovalle           | 900-15-16795  |" << endl;
-    cout << "+---------------------------------------------+" << endl;
-   cout << "| Jonnathan L. Fernando Aldana Ruano| 900-14-22577 |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
+    cout << "| Nombre                            | Carnet       |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
+    cout << "| Mario Soto Ovalle                 | 900-15-16795 |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
+    cout << "| Jonnathan L. Fernando Aldana Ruano| 900-14-22577 |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
 
     cout << endl << endl;
 }
@@ -407,18 +408,18 @@ int main()
 
     while (!salir) {
         cout << endl << endl << endl;
-        cout << "Proyecto Algoritmos SecciÃ³n F 2015" << endl;
+        cout << "Proyecto Algoritmos Sección F 2015" << endl;
         cout << "==================================" << endl;
-        cout << "MenÃº de opciones:" << endl;
+        cout << "Menú de opciones:" << endl;
         cout << "  1) Datos de la empresa" << endl;
         cout << "  2) Departamentos de la empresa" << endl;
         cout << "  3) Puestos de trabajo" << endl;
         cout << "  4) Empleados" << endl;
         cout << "  5) Evaluaciones" << endl;
-        cout << "  6) EvaluaciÃ³n de empleados" << endl;
-        cout << "  7) EvaluaciÃ³n de empleados" << endl;
+        cout << "  6) Evaluación de empleados" << endl;
+        cout << "  7) Información" << endl;
         cout << "  8) Salir" << endl;
-        cout << "Seleccione una opciÃ³n: ";
+        cout << "Seleccione una opción: ";
         cin >> menu;
 
         switch (menu) {
@@ -437,20 +438,19 @@ int main()
             case 5: // Evaluaciones
                 menuEvaluacion();
                 break;
-            case 6: // EvaluaciÃ³n de empleados
+            case 6: // Evaluación de empleados
                 menuEvaluar();
                 break;
-            case 7: // EvaluaciÃ³n de empleados
+            case 7: // Evaluación de empleados
                 informacion();
                 break;
             case 8:  // Salir
                 salir = 1; // Verdadero
                 break;
             default:
-                cout << "*** OpiciÃ³n invÃ¡lida ***" << endl << endl;
+                cout << "*** Opición inválida ***" << endl << endl;
         }
     }
     return 0;
 }
-
 
