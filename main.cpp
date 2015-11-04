@@ -10,6 +10,7 @@ using namespace std;
         char nit[15];
     };
 	struct Empleados {
+        int estado;
         char nombre[100];
         char codigo[15];
     };
@@ -186,98 +187,144 @@ void menuTrabajo ()
     }
 }
 
-void verEmpleados(fstream &fEmpleados)
+void verEmpleados(fstream &fEmpleado)
 {
     Empleados empleados;
+    int registros;
+    int fsize;
 
-    cout << endl << "Datos del empleado:" << endl;
-    cout << "--------------------" << endl;
+    fEmpleado.seekg (0, ios::end);
+    fsize = fEmpleado.tellg();
 
-    fEmpleados.seekg (0, ios::end);
-    if (fEmpleados.tellg() == 0) {
-        cout << "Â¡No hay empleado registrado!" << endl;
+    cout << "Datos del empleado" << endl;
+    cout << "------------------" << endl;
+
+    if (fsize == 0) {
+        cout << "¡No hay empleados registrados!" << endl;
     } else {
-        fEmpleados.seekg (0);
-        fEmpleados.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-        cout << "Codigo: " << empleados.codigo << endl;
-        cout << "Nombre: " << empleados.nombre << endl << endl << endl;
+        registros = fsize/sizeof(Empleados);
+        for(int i = 0; i < registros; i++) {
+            fEmpleado.seekg (i * sizeof(Empleados));
+            fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+            cout << i << "|" << empleados.estado << endl;
+            if(empleados.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << "Codigo: " << empleados.codigo << endl;
+                cout << "Nombre: " << empleados.nombre << endl << endl;
+            }
+        }
     }
 }
 
-void agregarEmpleados (fstream &fEmpleados){
-string nombre;
-string codigo;
-
+void agregarEmpleados(fstream &fEmpleado)
+{
     Empleados empleados;
-    
+    string valor;
+
     // Limpia el bufffer de entrada para poder leeer cadenas
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    fEmpleados.seekg (0, ios::end);
-    
-        cout << "Ingrese el Nombre de Nuevo Empleado: ";
-        getline(cin,nombre);
-        strncpy(empleados.nombre,nombre.c_str(),sizeof(empleados.nombre));
-        empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
+    empleados.estado = 1;
+    cout << "Ingrese el código asignado al nuevo empleado: ";
+    getline(cin,valor);
+    strncpy(empleados.codigo,valor.c_str(),sizeof(empleados.codigo));
 
-        cout << "Ingrese el Codigo Asignado al Nuevo Empleado: ";
-        getline(cin,codigo);
-        strncpy(empleados.codigo,codigo.c_str(),sizeof(empleados.codigo));
-        empleados.codigo[sizeof(empleados.codgio)-1] = '\0';
+    empleados.codigo[sizeof(empleados.codigo)-1] = '\0';
+    cout << "Ingrese el nombre de nuevo empleado: ";
+    getline(cin,valor);
+    strncpy(empleados.nombre,valor.c_str(),sizeof(empleados.nombre));
+    empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
 
-    fEmpleados.seekg (0);
-    fEmpleados.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-    cout << "Datos escritos" << endl << endl;
+    fEmpleado.seekg (0, ios::end);
+    fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+    cout << "Datos escritos" << "|" << empleados.estado << endl << endl;
 }
 
-void modificarEmpleados (fstream &fEmpleados)
+void modificarEmpleados (fstream &fEmpleado)
 {
-
     Empleados empleados;
     string temp;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
 
     // Limpia el bufffer de entrada para poder leeer cadenas
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    fEmpleados.seekg (0, ios::end);
-    if (fEmpleados.tellg() == 0) {
-        cout << "Â¡No hay empleado registrado!" << endl;
-        cout << "Ingresar datos del empleado: " << endl;
+    fEmpleado.seekg (0, ios::end);
+    fsize = fEmpleado.tellg();
 
-        cout << "Nombre: ";
-        getline(cin,temp);
-        strncpy(empleados.nombre,temp.c_str(),sizeof(empleados.nombre));
-        empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
+    cout << endl;
+    cout << "Modificar empleado" << endl;
+    cout << "------------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
 
-        cout << "Codigo: ";
-        getline(cin,temp);
-        strncpy(empleados.codigo,temp.c_str(),sizeof(empleados.codigo));
-        empleados.codigo[sizeof(empleados.codgio)-1] = '\0';
-
-    } else {
-        fEmpleados.seekg (0);
-        fEmpleados.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
-        cout << "Nombre (\"" << empleado.nombre << "\"): ";
-        getline(cin,temp);
-        if(temp.length()){
-            strncpy(empleados.nombre,temp.c_str(),sizeof(empleados.nombre));
-            empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
+    registros = fsize / sizeof(Empleados);
+    while ( i < registros || found ) {
+        fEmpleado.seekg (i * sizeof(Empleados));
+        fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+        if ( empleados.estado && (strcmp(temp.c_str(),empleados.codigo) == 0) ) {
+            found = 1;
+            break; // Hasta aqui, salir del ciclo
         }
+        i++;
+    }
+
+    if (found) {
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
         cout << "Codigo (\"" << empleados.codigo << "\"): ";
         getline(cin,temp);
         if(temp.length()){
             strncpy(empleados.codigo,temp.c_str(),sizeof(empleados.codigo));
             empleados.codigo[sizeof(empleados.codigo)-1] = '\0';
         }
+        cout << "Nombre (\"" << empleados.nombre << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(empleados.nombre,temp.c_str(),sizeof(empleados.nombre));
+            empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
+        }
+        fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+        cout << "Datos escritos" << endl << endl;
     }
-
-    fEmpleados.seekg (0);
-    fEmpleados.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-    cout << "Datos escritos" << endl << endl;
 }
 
-void menuEmpleados ()
+void eliminarEmpleados (fstream &fEmpleado)
+{
+    Empleados empleados;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEmpleado.seekg (0, ios::end);
+    fsize = fEmpleado.tellg();
+
+    cout << endl;
+    cout << "Eliminar empleado" << endl;
+    cout << "-----------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(Empleados);
+    while ( i < registros ) {
+        fEmpleado.seekg (i * sizeof(Empleados));
+        fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+        if ( empleados.estado && (strcmp(temp.c_str(),empleados.codigo) == 0) ) {
+            empleados.estado = 0;
+            fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
+            cout << "Datos escritos" << endl << endl;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+}
+
+void menuEmpleados (fstream &fEmpleado)
 {
     int salir = 0;
     int menu;
@@ -293,15 +340,15 @@ void menuEmpleados ()
         cout << "  5- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!salir) {
+        switch (menu) {
             case 1: // Vizualizar datos de empleados
-                verEmpleados(fEmpleados);
+                verEmpleados(fEmpleado);
                 break;
             case 2: // agregar datos de empleados
-                agregarEmpleados(fEmpleados);
+                agregarEmpleados(fEmpleado);
                 break;
             case 3: // Modificar datos de la empresa
-                modificarEmpleados(fEmpleados);
+                modificarEmpleados(fEmpleado);
                 break;
             case 4: // Eliminar
                 break;
@@ -402,9 +449,11 @@ int main()
 
     // Variables de archivos
     fstream fEmpresa;
+    fstream fEmpleado;
 
     // Abrir archivo como base de datos
     openDBfile("empresa.db",fEmpresa);
+    openDBfile("empleado.db",fEmpleado);
 
     while (!salir) {
         cout << endl << endl << endl;
@@ -433,7 +482,7 @@ int main()
                 menuTrabajo();
                 break;
             case 4: // Empleados
-                menuEmpleados();
+                menuEmpleados(fEmpleado);
                 break;
             case 5: // Evaluaciones
                 menuEvaluacion();
