@@ -24,22 +24,6 @@ void openDBfile (string nombre, fstream &archivo) {
     }
 }
 
-
-void ListadoEmpleados(){
-     cout << endl << "Listado de empleados:" << endl;
-    cout << "--------------------" << endl;
-
-    fEmpresa.seekg (0, ios::end);
-    if (fEmpresa.tellg() == 0) {
-        cout << "¡No hay empleados existentes!" << endl;
-    } else {
-        fEmpresa.seekg (0);
-        fEmpresa.read(reinterpret_cast<char *>(&Empleados), sizeof(Empleados));
-        cout << "Nombre: " << Empleados.nombre << endl;
-        cout << "NIT: " << Empleados.codigo << endl << endl << endl;
-    }
-}
-
 void verEmpresa(fstream &fEmpresa)
 {
     Empresa empresa;
@@ -333,7 +317,7 @@ void eliminarEmpleados (fstream &fEmpleado)
         if ( empleados.estado && (strcmp(temp.c_str(),empleados.codigo) == 0) ) {
             empleados.estado = 0;
             fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-            cout << "Datos escritos" << endl << endl;
+            cout << "Registro eliminado" << endl << endl;
             break; // Hasta aqui, salir del ciclo
         }
         i++;
@@ -367,6 +351,7 @@ void menuEmpleados (fstream &fEmpleado)
                 modificarEmpleados(fEmpleado);
                 break;
             case 4: // Eliminar
+                eliminarEmpleados(fEmpleado);
                 break;
             case 5:
                 salir = 1;
