@@ -7,3 +7,12 @@ algoritmos2015.layout
 bin
 obj
 
+# Ignore other objects
+algoritmos2015.DSW
+algoritmos2015.OBR
+algoritmos2015.ide
+algoritmos2015.mbt
+algoritmos2015.mrt
+bcwdef.csm
+
+
