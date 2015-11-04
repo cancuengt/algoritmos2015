@@ -23,6 +23,22 @@ void openDBfile (string nombre, fstream &archivo) {
     }
 }
 
+
+void ListadoEmpleados(){
+     cout << endl << "Listado de empleados:" << endl;
+    cout << "--------------------" << endl;
+
+    fEmpresa.seekg (0, ios::end);
+    if (fEmpresa.tellg() == 0) {
+        cout << "¡No hay empleados existentes!" << endl;
+    } else {
+        fEmpresa.seekg (0);
+        fEmpresa.read(reinterpret_cast<char *>(&Empleados), sizeof(Empleados));
+        cout << "Nombre: " << Empleados.nombre << endl;
+        cout << "NIT: " << Empleados.codigo << endl << endl << endl;
+    }
+}
+
 void verEmpresa(fstream &fEmpresa)
 {
     Empresa empresa;
@@ -209,12 +225,12 @@ string nombre;
 string codigo;
 
     Empleados empleados;
-    
+
     // Limpia el bufffer de entrada para poder leeer cadenas
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     fEmpleados.seekg (0, ios::end);
-    
+
         cout << "Ingrese el Nombre de Nuevo Empleado: ";
         getline(cin,nombre);
         strncpy(empleados.nombre,nombre.c_str(),sizeof(empleados.nombre));
