@@ -40,6 +40,8 @@ void openDBfile (string nombre, fstream &archivo) {
     }
 }
 
+
+
 void verEmpresa(fstream &fEmpresa)
 {
     Empresa empresa;
@@ -312,6 +314,144 @@ void menuDepartamentos (fstream &fDepartamento)
     }
 }
 
+void verpuestos(fstream &fPuesto)
+{
+    puestos puestos;
+    int registros;
+    int fsize;
+
+    fPuesto.seekg (0, ios::end);
+    fsize = fPuesto.tellg();
+
+    cout << "Datos del empleado" << endl;
+    cout << "------------------" << endl;
+
+    if (fsize == 0) {
+        cout << "¡No hay puestos registrados!" << endl;
+    } else {
+        registros = fsize/sizeof(puestos);
+        for(int i = 0; i < registros; i++) {
+            fPuesto.seekg (i * sizeof(puestos));
+            fPuesto.read(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+            cout << i << "|" << puestos.estado << endl;
+            if(puestos.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << "Codigo: " << puestos.codigo << endl;
+                cout << "Nombre: " << puestos.nombre << endl << endl;
+            }
+        }
+    }
+}
+
+void agregarpuestos(fstream &fPuesto)
+{
+    puestos puestos;
+    string valor;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    puestos.estado = 1;
+    cout << "Ingrese el código asignado al nuevo empleado: ";
+    getline(cin,valor);
+    strncpy(puestos.codigo,valor.c_str(),sizeof(puestos.codigo));
+
+    puestos.codigo[sizeof(puestos.codigo)-1] = '\0';
+    cout << "Ingrese el nombre de nuevo empleado: ";
+    getline(cin,valor);
+    strncpy(puestos.nombre,valor.c_str(),sizeof(puestos.nombre));
+    puestos.nombre[sizeof(puestos.nombre)-1] = '\0';
+
+    fPuesto.seekg (0, ios::end);
+    fPuesto.write(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+    cout << "Datos escritos" << "|" << puestos.estado << endl << endl;
+}
+
+
+void modificarpuestos (fstream &fEmpleado)
+{
+    puestos puestos;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEmpleado.seekg (0, ios::end);
+    fsize = fEmpleado.tellg();
+
+    cout << endl;
+    cout << "Modificar empleado" << endl;
+    cout << "------------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(puestos);
+    while ( i < registros || found ) {
+        fEmpleado.seekg (i * sizeof(puestos));
+        fEmpleado.read(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+        if ( puestos.estado && (strcmp(temp.c_str(),puestos.codigo) == 0) ) {
+            found = 1;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+
+    if (found) {
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
+        cout << "Codigo (\"" << puestos.codigo << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(puestos.codigo,temp.c_str(),sizeof(puestos.codigo));
+            puestos.codigo[sizeof(puestos.codigo)-1] = '\0';
+        }
+        cout << "Nombre (\"" << puestos.nombre << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(puestos.nombre,temp.c_str(),sizeof(puestos.nombre));
+            puestos.nombre[sizeof(puestos.nombre)-1] = '\0';
+        }
+        fEmpleado.write(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+        cout << "Datos escritos" << endl << endl;
+    }
+}
+
+void eliminarpuestos (fstream &fEmpleado)
+{
+    puestos puestos;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEmpleado.seekg (0, ios::end);
+    fsize = fEmpleado.tellg();
+
+    cout << endl;
+    cout << "Eliminar empleado" << endl;
+    cout << "-----------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(puestos);
+    while ( i < registros ) {
+        fEmpleado.seekg (i * sizeof(puestos));
+        fEmpleado.read(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+        if ( puestos.estado && (strcmp(temp.c_str(),puestos.codigo) == 0) ) {
+            puestos.estado = 0;
+            fEmpleado.write(reinterpret_cast<char *>(&puestos), sizeof(puestos));
+            cout << "Registro eliminado" << endl << endl;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+}
+
 void menuTrabajo ()
 {
     int salir = 0;
@@ -328,14 +468,18 @@ void menuTrabajo ()
         cout << "  5- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!salir) {
-            case 1: // Listar
+        switch (!salir)
+            case 1: // Vizualizar datos de puestos
+                verpuestos(fpuesto);
                 break;
-            case 2: // Agregar
+            case 2: // agregar datos de puestos
+                agregarpuestos(fpuesto);
                 break;
-            case 3: // Modificar
+            case 3: // Modificar datos de la empresa
+                modificarpuestos(fpuesto);
                 break;
             case 4: // Eliminar
+                eliminarpuestos(fpuesto);
                 break;
             case 5:
                 salir = 1;
@@ -781,6 +925,9 @@ void informacion ()
     cout << "+--------------------------------------------------+" << endl;
     cout << "| Jonnathan L. Fernando Aldana Ruano| 900-14-22577 |" << endl;
     cout << "+--------------------------------------------------+" << endl;
+     cout << "+--------------------------------------------------+" << endl;
+    cout << "| Victor Alexander Boror Monterroso | 900-15-17365 |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
 
     cout << endl << endl;
 }
@@ -814,7 +961,8 @@ int main ()
         cout << "  5) Evaluaciones" << endl;
         cout << "  6) Evaluación de empleados" << endl;
         cout << "  7) Información" << endl;
-        cout << "  8) Salir" << endl;
+        cout << "  9) Ver Empresa" << endl;
+        cout << "  9) Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
 
@@ -840,9 +988,15 @@ int main ()
             case 7: // Evaluación de empleados
                 informacion();
                 break;
-            case 8:  // Salir
+
+            case 8:
+                verEmpresa(); //Ver Empresa
+                break;
+
+            case 9:  // Salir
                 salir = 1; // Verdadero
                 break;
+
             default:
                 cout << "*** Opición inválida ***" << endl << endl;
         }
