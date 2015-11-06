@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -9,15 +10,26 @@ using namespace std;
         char nombre[100];
         char nit[15];
     };
+
     struct Empleados {
         int estado;
         char nombre[100];
         char codigo[15];
     };
+
     struct Departamentos {
         int estado;
         char nombre[100];
         char codigo[15];
+    };
+
+    struct Evaluacion {
+        int estado;
+        int numero;
+        char descripcion[100];
+        int e1; // Siempre
+        int e2; // Algunas veces
+        int e3; // Nunca
     };
 
 void openDBfile (string nombre, fstream &archivo) {
@@ -253,6 +265,7 @@ void eliminarDepartamento (fstream &fDepartamento)
         fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
         if ( departamento.estado && (strcmp(temp.c_str(),departamento.codigo) == 0) ) {
             departamento.estado = 0;
+            fDepartamento.seekg (i * sizeof(Departamentos));
             fDepartamento.write(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
             cout << "Registro eliminado" << endl << endl;
             break; // Hasta aqui, salir del ciclo
@@ -370,10 +383,10 @@ void agregarEmpleados (fstream &fEmpleado)
 
     empleados.estado = 1;
     cout << "Ingrese el código asignado al nuevo empleado: ";
-    getline(cin,valor);
-    strncpy(empleados.codigo,valor.c_str(),sizeof(empleados.codigo));
-
+    getline(cin, valor);
+    strncpy(empleados.codigo, valor.c_str(), sizeof(empleados.codigo));
     empleados.codigo[sizeof(empleados.codigo)-1] = '\0';
+
     cout << "Ingrese el nombre de nuevo empleado: ";
     getline(cin,valor);
     strncpy(empleados.nombre,valor.c_str(),sizeof(empleados.nombre));
@@ -462,6 +475,7 @@ void eliminarEmpleados (fstream &fEmpleado)
         fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
         if ( empleados.estado && (strcmp(temp.c_str(),empleados.codigo) == 0) ) {
             empleados.estado = 0;
+            fEmpleado.seekg (i * sizeof(Empleados));
             fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
             cout << "Registro eliminado" << endl << endl;
             break; // Hasta aqui, salir del ciclo
@@ -508,7 +522,185 @@ void menuEmpleados (fstream &fEmpleado)
     }
 }
 
-void menuEvaluacion()
+void verEvaluacion(fstream &fEvaluacion)
+{
+    Evaluacion evaluacion;
+    int registros;
+    int fsize;
+
+    fEvaluacion.seekg (0, ios::end);
+    fsize = fEvaluacion.tellg();
+
+    cout << "Listado de puntos a evaluar" << endl;
+    cout << "---------------------------" << endl;
+
+    if (fsize == 0) {
+        cout << "¡No hay puntos a evaluar!" << endl;
+    } else {
+        registros = fsize/sizeof(Empleados);
+        for(int i = 0; i < registros; i++) {
+            fEvaluacion.seekg (i * sizeof(Evaluacion));
+            fEvaluacion.read(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+            if(evaluacion.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << evaluacion.numero << ". " << evaluacion.descripcion << endl;
+                cout << "Siempre " << evaluacion.e1 << "%   | Algunas veces " << evaluacion.e2 << "%   | Nunca " << evaluacion.e3 << "%" << endl << endl;
+            }
+        }
+    }
+}
+
+void agregarEvaluacion(fstream &fEvaluacion)
+{
+    Evaluacion evaluacion;
+    string valor;
+    int registros;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    evaluacion.estado = 1;
+    cout << "Nombre del aspecto a evaluar: ";
+    getline(cin,valor);
+    strncpy(evaluacion.descripcion, valor.c_str(), sizeof(evaluacion.descripcion));
+    evaluacion.descripcion[sizeof(evaluacion.descripcion)-1] = '\0';
+
+    cout << "Ponderacion evaluación 1 (siempre)      : ";
+    cin >> evaluacion.e1;
+
+    cout << "Ponderacion evaluación 2 (algunas veces): ";
+    cin >> evaluacion.e2;
+
+    cout << "Ponderacion evaluación 3 (nunca)        : ";
+    cin >> evaluacion.e3;
+
+    if ((evaluacion.e1 + evaluacion.e2 + evaluacion.e3) == 100) {
+        fEvaluacion.seekg (0, ios::end);
+        evaluacion.numero = (fEvaluacion.tellg() / sizeof(Evaluacion)) + 1;
+        fEvaluacion.write(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+        cout << "Datos escritos. Registro " << evaluacion.numero << endl << endl;
+    } else {
+        cout << "Error: La ponderación evaluada no suma 100%. No se pueden escribir datos." << endl;
+    }
+}
+
+void modificarEvaluacion(fstream &fEvaluacion)
+{
+    Evaluacion evaluacion;
+    string temp;
+    int e0;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEvaluacion.seekg (0, ios::end);
+    fsize = fEvaluacion.tellg();
+
+    cout << endl;
+    cout << "Modificar evaluación" << endl;
+    cout << "--------------------" << endl;
+    cout << "Número: ";
+    cin >> e0;
+
+    registros = fsize / sizeof(Evaluacion);
+    while ( i < registros || found ) {
+        fEvaluacion.seekg(i * sizeof(Evaluacion));
+        fEvaluacion.read(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+        if (evaluacion.numero == e0) {
+            found = 1;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+
+    if (found) {
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
+        cout << "Aspecto a evaluar (\"" << evaluacion.descripcion << "\"): ";
+        getline(cin, temp);
+        if(temp.length()){
+            strncpy(evaluacion.descripcion, temp.c_str(), sizeof(evaluacion.descripcion));
+            evaluacion.descripcion[sizeof(evaluacion.descripcion)-1] = '\0';
+        }
+
+        cout << "Ponderacion evaluación 1 \"siempre\" (" << evaluacion.e1 << "): ";
+        getline(cin, temp);
+        if(temp.length()){
+            e0 = atoi(temp.c_str());
+            if (evaluacion.e1 != 0) {
+                evaluacion.e1 = e0;
+            }
+        }
+
+        cout << "Ponderacion evaluación 2 \"algunas veces\" (" << evaluacion.e2 << "): ";
+        getline(cin, temp);
+        if(temp.length()){
+            e0 = atoi(temp.c_str());
+            if (evaluacion.e2 != 0) {
+                evaluacion.e2 = e0;
+            }
+        }
+
+        cout << "Ponderacion evaluación 3 \"nunca\" (" << evaluacion.e3 << "): ";
+        getline(cin, temp);
+        if(temp.length()){
+            e0 = atoi(temp.c_str());
+            if (evaluacion.e3 != 0) {
+                evaluacion.e3 = e0;
+            }
+        }
+
+        if ((evaluacion.e1 + evaluacion.e2 + evaluacion.e3) == 100) {
+            fEvaluacion.seekg (i * sizeof(Evaluacion));
+            fEvaluacion.write(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+            cout << "Datos escritos." << endl << endl;
+        } else {
+            cout << "Error: La ponderación evaluada no suma 100%. No se pueden escribir datos." << endl;
+        }
+    }
+}
+
+void eliminarEvaluacion(fstream &fEvaluacion)
+{
+    Evaluacion evaluacion;
+    string temp;
+    int e0;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fEvaluacion.seekg (0, ios::end);
+    fsize = fEvaluacion.tellg();
+
+    cout << endl;
+    cout << "Modificar evaluación" << endl;
+    cout << "--------------------" << endl;
+    cout << "Número: ";
+    cin >> e0;
+
+    registros = fsize / sizeof(Evaluacion);
+    while ( i < registros || found ) {
+        fEvaluacion.seekg(i * sizeof(Evaluacion));
+        fEvaluacion.read(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+        if (evaluacion.numero == e0) {
+            evaluacion.estado = 0;
+            fEvaluacion.seekg (i * sizeof(Evaluacion));
+            fEvaluacion.write(reinterpret_cast<char *>(&evaluacion), sizeof(Evaluacion));
+            cout << "Registro eliminado" << endl << endl;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+}
+
+void menuEvaluacion (fstream &fEvaluacion)
 {
     int salir = 0;
     int menu;
@@ -524,14 +716,18 @@ void menuEvaluacion()
         cout << "  5- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!salir) {
+        switch (menu) {
             case 1: // Listar
+                verEvaluacion(fEvaluacion);
                 break;
             case 2: // Agregar
+                agregarEvaluacion(fEvaluacion);
                 break;
             case 3: // Modificar
+                modificarEvaluacion(fEvaluacion);
                 break;
             case 4: // Eliminar
+                eliminarEvaluacion(fEvaluacion);
                 break;
             case 5:
                 salir = 1;
@@ -598,11 +794,13 @@ int main ()
     fstream fEmpresa;
     fstream fEmpleado;
     fstream fDepartamento;
+    fstream fEvaluacion;
 
     // Abrir archivo como base de datos
     openDBfile("empresa.db",fEmpresa);
     openDBfile("empleado.db",fEmpleado);
     openDBfile("departamento.db",fDepartamento);
+    openDBfile("evaluacion.db",fEvaluacion);
 
     while (!salir) {
         cout << endl << endl << endl;
@@ -634,7 +832,7 @@ int main ()
                 menuEmpleados(fEmpleado);
                 break;
             case 5: // Evaluaciones
-                menuEvaluacion();
+                menuEvaluacion(fEvaluacion);
                 break;
             case 6: // Evaluación de empleados
                 menuEvaluar();
