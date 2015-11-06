@@ -9,12 +9,16 @@ using namespace std;
         char nombre[100];
         char nit[15];
     };
-	struct Empleados {
+    struct Empleados {
         int estado;
         char nombre[100];
         char codigo[15];
     };
-
+    struct Departamentos {
+        int estado;
+        char nombre[100];
+        char codigo[15];
+    };
 
 void openDBfile (string nombre, fstream &archivo) {
     archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary);
@@ -119,7 +123,145 @@ void menuEmpresa (fstream &fEmpresa)
     }
 }
 
-void menuDepartamentos ()
+void verDepartamentos (fstream &fDepartamento)
+{
+    Departamentos departamento;
+    int registros;
+    int fsize;
+
+    fDepartamento.seekg (0, ios::end);
+    fsize = fDepartamento.tellg();
+
+    cout << "Listado de departamentos" << endl;
+    cout << "------------------------" << endl;
+
+    if (fsize == 0) {
+        cout << "¡No hay departamentos registrados!" << endl;
+    } else {
+        registros = fsize/sizeof(Departamentos);
+        for(int i = 0; i < registros; i++) {
+            fDepartamento.seekg (i * sizeof(Departamentos));
+            fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+            if(departamento.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << "Codigo: " << departamento.codigo << endl;
+                cout << "Nombre: " << departamento.nombre << endl << endl;
+            }
+        }
+    }
+}
+
+void agregarDepartamento (fstream &fDepartamento)
+{
+    Departamentos departamento;
+    string valor;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    departamento.estado = 1;
+
+    cout << "Código de departamento: ";
+    getline(cin,valor);
+    strncpy(departamento.codigo,valor.c_str(),sizeof(departamento.codigo));
+    departamento.codigo[sizeof(departamento.codigo)-1] = '\0';
+
+    cout << "Nombre del departamento: ";
+    getline(cin,valor);
+    strncpy(departamento.nombre,valor.c_str(),sizeof(departamento.nombre));
+    departamento.nombre[sizeof(departamento.nombre)-1] = '\0';
+
+    fDepartamento.seekg (0, ios::end);
+    fDepartamento.write(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+    cout << "Datos escritos" << endl << endl;
+}
+
+void modificarDepartamento (fstream &fDepartamento)
+{
+    Departamentos departamento;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fDepartamento.seekg (0, ios::end);
+    fsize = fDepartamento.tellg();
+
+    cout << endl;
+    cout << "Modificar departamento" << endl;
+    cout << "----------------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(Empleados);
+    while ( i < registros || found ) {
+        fDepartamento.seekg (i * sizeof(Departamentos));
+        fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+        if ( departamento.estado && (strcmp(temp.c_str(),departamento.codigo) == 0) ) {
+            found = 1;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+
+    if (found) {
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacio." << endl;
+        cout << "Codigo (\"" << departamento.codigo << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(departamento.codigo,temp.c_str(),sizeof(departamento.codigo));
+            departamento.codigo[sizeof(departamento.codigo)-1] = '\0';
+        }
+        cout << "Nombre (\"" << departamento.nombre << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(departamento.nombre,temp.c_str(),sizeof(departamento.nombre));
+            departamento.nombre[sizeof(departamento.nombre)-1] = '\0';
+        }
+        fDepartamento.seekg (i * sizeof(Departamentos));
+        fDepartamento.write(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+        cout << "Datos escritos" << endl << endl;
+    }
+}
+
+void eliminarDepartamento (fstream &fDepartamento)
+{
+    Departamentos departamento;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fDepartamento.seekg (0, ios::end);
+    fsize = fDepartamento.tellg();
+
+    cout << endl;
+    cout << "Eliminar departamento" << endl;
+    cout << "---------------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(Empleados);
+    while ( i < registros ) {
+        fDepartamento.seekg (i * sizeof(Departamentos));
+        fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+        if ( departamento.estado && (strcmp(temp.c_str(),departamento.codigo) == 0) ) {
+            departamento.estado = 0;
+            fDepartamento.write(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+            cout << "Registro eliminado" << endl << endl;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+}
+
+void menuDepartamentos (fstream &fDepartamento)
 {
     int salir = 0;
     int menu;
@@ -135,20 +277,24 @@ void menuDepartamentos ()
         cout << "  5- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!salir) {
+        switch (menu) {
             case 1: // Listar
+                verDepartamentos(fDepartamento);
                 break;
             case 2: // Agregar
+                agregarDepartamento(fDepartamento);
                 break;
             case 3: // Modificar
+                modificarDepartamento(fDepartamento);
                 break;
             case 4: // Eliminar
+                eliminarDepartamento(fDepartamento);
                 break;
             case 5:
                 salir = 1;
                 break;
             default:
-                cout << "+++ OpiciÃ³n invÃ¡lida +++" << endl << endl;
+                cout << "+++ Opición inválida +++" << endl << endl;
         }
     }
 }
@@ -187,7 +333,7 @@ void menuTrabajo ()
     }
 }
 
-void verEmpleados(fstream &fEmpleado)
+void verEmpleados (fstream &fEmpleado)
 {
     Empleados empleados;
     int registros;
@@ -206,7 +352,6 @@ void verEmpleados(fstream &fEmpleado)
         for(int i = 0; i < registros; i++) {
             fEmpleado.seekg (i * sizeof(Empleados));
             fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-            cout << i << "|" << empleados.estado << endl;
             if(empleados.estado) { // Solo toma en cuenta cuando estado > 0
                 cout << "Codigo: " << empleados.codigo << endl;
                 cout << "Nombre: " << empleados.nombre << endl << endl;
@@ -215,7 +360,7 @@ void verEmpleados(fstream &fEmpleado)
     }
 }
 
-void agregarEmpleados(fstream &fEmpleado)
+void agregarEmpleados (fstream &fEmpleado)
 {
     Empleados empleados;
     string valor;
@@ -236,7 +381,7 @@ void agregarEmpleados(fstream &fEmpleado)
 
     fEmpleado.seekg (0, ios::end);
     fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
-    cout << "Datos escritos" << "|" << empleados.estado << endl << endl;
+    cout << "Datos escritos" << endl << endl;
 }
 
 void modificarEmpleados (fstream &fEmpleado)
@@ -285,6 +430,7 @@ void modificarEmpleados (fstream &fEmpleado)
             strncpy(empleados.nombre,temp.c_str(),sizeof(empleados.nombre));
             empleados.nombre[sizeof(empleados.nombre)-1] = '\0';
         }
+        fEmpleado.seekg (i * sizeof(Empleados));
         fEmpleado.write(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
         cout << "Datos escritos" << endl << endl;
     }
@@ -443,7 +589,7 @@ void informacion ()
     cout << endl << endl;
 }
 
-int main()
+int main ()
 {
     int salir = 0; // Salir del sistema
     int menu;
@@ -451,10 +597,12 @@ int main()
     // Variables de archivos
     fstream fEmpresa;
     fstream fEmpleado;
+    fstream fDepartamento;
 
     // Abrir archivo como base de datos
     openDBfile("empresa.db",fEmpresa);
     openDBfile("empleado.db",fEmpleado);
+    openDBfile("departamento.db",fDepartamento);
 
     while (!salir) {
         cout << endl << endl << endl;
@@ -477,7 +625,7 @@ int main()
                 menuEmpresa(fEmpresa);
                 break;
             case 2: // Departamentos
-                menuDepartamentos();
+                menuDepartamentos(fDepartamento);
                 break;
             case 3: // Puestos de trabajo
                 menuTrabajo();
