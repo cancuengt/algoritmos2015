@@ -1,4 +1,5 @@
 # Codeblocks linux
+# zinjal
 algoritmos2015.cbp
 algoritmos2015.depend
 algoritmos2015.layout
@@ -14,5 +15,18 @@ algoritmos2015.ide
 algoritmos2015.mbt
 algoritmos2015.mrt
 bcwdef.csm
-
-
+departamento.db
+empleado.db
+empresa.db
+evaluacion.db
+puestos.db
+main.exe
+main.ilc
+main.ild
+main.ilf
+main.ils
+main.obj
+main.tds
+NONAME00.exe
+README.md
+noname00.obj
