@@ -1080,7 +1080,7 @@ void evaluarEmpleados(fstream &fEmpleado, fstream &fEvaluacion)
         }
     }
 }
-void menuEvaluar (fstream &fEmpleado, fstream &fEvaluacion, fstream &fResultados)
+void menuEvaluar (fstream &fEmpleado, fstream &fEvaluacion)
 {
     int salir = 0;
     int menu;
@@ -1137,7 +1137,6 @@ int main ()
     fstream fDepartamento;
     fstream fEvaluacion;
     fstream fPuestos;
-    fstream fResultados;  // Resultados de las evaluaciones
 
     // Abrir archivo como base de datos
     openDBfile("empresa.db",     fEmpresa);
@@ -1145,7 +1144,6 @@ int main ()
     openDBfile("departamento.db",fDepartamento);
     openDBfile("evaluacion.db",  fEvaluacion);
     openDBfile("puestos.db",     fPuestos);
-    openDBfile("resultados.db",  fResultados);
 
     while (!salir) {
         cout << endl << endl << endl;
@@ -1180,7 +1178,7 @@ int main ()
                 menuEvaluacion(fEvaluacion);
                 break;
             case 6: // Evaluación de empleados
-                menuEvaluar(fEmpleado, fEvaluacion, fResultados);
+                menuEvaluar(fEmpleado, fEvaluacion);
                 break;
             case 7: // Evaluación de empleados
                 informacion();
