@@ -8,39 +8,39 @@
 
 using namespace std;
 
-    struct Empresa {
-        char nombre[100];
-        char nit[15];
-    };
+struct Empresa {
+    char nombre[100];
+    char nit[15];
+};
 
-    struct Empleados {
-        int estado;
-        char nombre[100];
-        char codigo[15];
-        int evaluacion;
-    };
+struct Empleados {
+    int estado;
+    char nombre[100];
+    char codigo[15];
+    int evaluacion;
+};
 
-    struct Departamentos {
-        int estado;
-        char nombre[100];
-        char codigo[15];
-    };
+struct Departamentos {
+    int estado;
+    char nombre[100];
+    char codigo[15];
+};
 
-    struct Evaluacion {
-        int estado;
-        int numero;
-        char descripcion[100];
-        int e1; // Siempre
-        int e2; // Algunas veces
-        int e3; // Nunca
-    };
+struct Evaluacion {
+    int estado;
+    int numero;
+    char descripcion[100];
+    int e1; // Siempre
+    int e2; // Algunas veces
+    int e3; // Nunca
+};
 
-    struct Puestos {
-        int estado;
-        char departamento[10];
-        char codigo[10];
-        char descripcion[100];
-    };
+struct Puestos {
+    int estado;
+    char departamento[10];
+    char codigo[10];
+    char descripcion[100];
+};
 
 void openDBfile (string nombre, fstream &archivo)
 {
@@ -574,7 +574,8 @@ void verEmpleados (fstream &fEmpleado)
             fEmpleado.read(reinterpret_cast<char *>(&empleados), sizeof(Empleados));
             if(empleados.estado) { // Solo toma en cuenta cuando estado > 0
                 cout << "Codigo: " << empleados.codigo << endl;
-                cout << "Nombre: " << empleados.nombre << endl << endl;
+                cout << "Nombre: " << empleados.nombre << endl;
+                cout << "Evaluación: " << empleados.evaluacion << endl << endl;
             }
         }
     }
@@ -1122,7 +1123,8 @@ void informacion ()
     cout << "+--------------------------------------------------+" << endl;
     cout << "| Jonnathan L. Fernando Aldana Ruano| 900-14-22577 |" << endl;
     cout << "+--------------------------------------------------+" << endl;
-
+    cout << "| Victor Alexander Boror Monterroso | 900-15-17365 |" << endl;
+    cout << "+--------------------------------------------------+" << endl;
     cout << endl << endl;
 }
 
@@ -1192,5 +1194,4 @@ int main ()
     }
     return 0;
 }
-
 
