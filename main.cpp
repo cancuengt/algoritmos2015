@@ -3,6 +3,7 @@
 #include <cstring>
 #include <fstream>
 #include <limits>
+#include <iomanip>
 
 using namespace std;
 
@@ -32,7 +33,15 @@ using namespace std;
         int e3; // Nunca
     };
 
-void openDBfile (string nombre, fstream &archivo) {
+    struct Puestos {
+        int estado;
+        char departamento[10];
+        char codigo[10];
+        char descripcion[100];
+    };
+
+void openDBfile (string nombre, fstream &archivo)
+{
     archivo.open(nombre.c_str(), ios::out | ios::in | ios::binary);
     if (!archivo.is_open()) {
         // Si el archivo no está abierto lo crea
@@ -312,14 +321,128 @@ void menuDepartamentos (fstream &fDepartamento)
     }
 }
 
-void menuTrabajo ()
+Departamentos buscarDepartamentos(fstream &fDepartamento, string codigo)
+{
+    Departamentos departamento;
+    Departamentos resultado;
+    int found = 0;
+    int i     = 0;
+    int registros;
+
+    resultado.estado = 0;
+    fDepartamento.seekg (0, ios::end);
+    registros = fDepartamento.tellg() / sizeof(Departamentos);
+    while ( i < registros ) {
+        fDepartamento.seekg (i * sizeof(Departamentos));
+        fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+        if ( strcmp(codigo.c_str(), departamento.codigo) == 0 ) {
+            resultado = departamento;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+    return resultado;
+}
+
+void verPuestos(fstream &fPuestos, fstream &fDepartamento)
+{
+    Puestos puesto;
+    int registros;
+    int fsize;
+
+    fPuestos.seekg (0, ios::end);
+    fsize = fPuestos.tellg();
+
+    cout << "Listado de puestos" << endl;
+    cout << "------------------" << endl;
+
+    if (fsize == 0) {
+        cout << "¡No hay puestos registrados!" << endl;
+    } else {
+        registros = fsize / sizeof(Puestos);
+        for(int i = 0; i < registros; i++) {
+            fPuestos.seekg (i * sizeof(Puestos));
+            fPuestos.read(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+            if(puesto.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << "Codigo: " << puesto.codigo << endl;
+                cout << "Descripción: " << puesto.descripcion << endl;
+                cout << "Departamento: " << buscarDepartamentos(fDepartamento, string(puesto.departamento)).nombre << endl << endl;
+            }
+        }
+    }
+}
+
+void agregarPuestos(fstream &fPuestos, fstream &fDepartamento)
+{
+    Departamentos departamento;
+    Puestos       puesto;
+    string valor;
+    int registros;
+    int fsize;
+    int i;
+
+    cout << "Agregar puesto de trabajo" << endl;
+    cout << "-------------------------" << endl;
+
+    fDepartamento.seekg (0, ios::end);
+    if (fDepartamento.tellg() == 0) {
+        cout << "¡No hay departamentos registrados!" << endl;
+    } else {
+        // Limpia el bufffer de entrada para poder leeer cadenas
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        cout << "Código del puesto: ";
+        getline(cin,valor);
+        strncpy(puesto.codigo,valor.c_str(),sizeof(puesto.codigo));
+        puesto.codigo[sizeof(puesto.codigo)-1] = '\0';
+
+        cout << "Descripción del puesto: ";
+        getline(cin,valor);
+        strncpy(puesto.descripcion, valor.c_str(), sizeof(puesto.descripcion));
+        puesto.descripcion[sizeof(puesto.descripcion)-1] = '\0';
+
+        cout << "Departamento: " << endl;
+        fDepartamento.seekg (0, ios::end);
+        registros = fDepartamento.tellg()/sizeof(Departamentos);
+        for(i = 0; i < registros; i++) {
+            fDepartamento.seekg (i * sizeof(Departamentos));
+            fDepartamento.read(reinterpret_cast<char *>(&departamento), sizeof(Departamentos));
+            if(departamento.estado) { // Solo toma en cuenta cuando estado > 0
+                cout << setw(sizeof(departamento.codigo)) << departamento.codigo << " | " << departamento.nombre << endl;
+            }
+        }
+        cout << "Ingrese el departamento: ";
+        getline(cin, valor);
+        strncpy(puesto.departamento, valor.c_str(), sizeof(puesto.departamento));
+        puesto.departamento[sizeof(puesto.departamento)-1] = '\0';
+
+        if(buscarDepartamentos(fDepartamento, puesto.departamento).estado) {
+            fPuestos.seekg (0, ios::end);
+            fPuestos.write(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+            cout << "Datos escritos" << endl << endl;
+        } else {
+            cout << "No ha ingresado un departamento válido" << endl;
+        }
+    }
+}
+
+void modificarPuestos(fstream &fPuestos)
+{
+
+}
+
+void eliminarPuestos(fstream &fPuestos)
+{
+}
+
+void menuPuestos (fstream &fPuestos, fstream &fDepartamento)
 {
     int salir = 0;
     int menu;
 
     while (!salir) {
         cout << endl << endl << endl;
-        cout << "Mantenimiento de Puestos de Trabajo" << endl;
+        cout << "Mantenimiento de Puestos de trabajo" << endl;
         cout << "-----------------------------------" << endl;
         cout << "  1- Listar puestos de trabajo" << endl;
         cout << "  2- Agregar puesto de trabajo" << endl;
@@ -328,14 +451,18 @@ void menuTrabajo ()
         cout << "  5- Salir" << endl;
         cout << "Seleccione una opción: ";
         cin >> menu;
-        switch (!salir) {
+        switch (menu) {
             case 1: // Listar
+                verPuestos(fPuestos, fDepartamento);
                 break;
             case 2: // Agregar
+                agregarPuestos(fPuestos, fDepartamento);
                 break;
             case 3: // Modificar
+                modificarPuestos(fPuestos);
                 break;
             case 4: // Eliminar
+                eliminarPuestos(fPuestos);
                 break;
             case 5:
                 salir = 1;
@@ -553,7 +680,6 @@ void agregarEvaluacion(fstream &fEvaluacion)
 {
     Evaluacion evaluacion;
     string valor;
-    int registros;
 
     // Limpia el bufffer de entrada para poder leeer cadenas
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -795,12 +921,14 @@ int main ()
     fstream fEmpleado;
     fstream fDepartamento;
     fstream fEvaluacion;
+    fstream fPuestos;
 
     // Abrir archivo como base de datos
     openDBfile("empresa.db",fEmpresa);
     openDBfile("empleado.db",fEmpleado);
     openDBfile("departamento.db",fDepartamento);
     openDBfile("evaluacion.db",fEvaluacion);
+    openDBfile("puestos.db",fPuestos);
 
     while (!salir) {
         cout << endl << endl << endl;
@@ -826,7 +954,7 @@ int main ()
                 menuDepartamentos(fDepartamento);
                 break;
             case 3: // Puestos de trabajo
-                menuTrabajo();
+                menuPuestos(fPuestos, fDepartamento);
                 break;
             case 4: // Empleados
                 menuEmpleados(fEmpleado);
