@@ -325,7 +325,6 @@ Departamentos buscarDepartamentos(fstream &fDepartamento, string codigo)
 {
     Departamentos departamento;
     Departamentos resultado;
-    int found = 0;
     int i     = 0;
     int registros;
 
@@ -378,7 +377,6 @@ void agregarPuestos(fstream &fPuestos, fstream &fDepartamento)
     Puestos       puesto;
     string valor;
     int registros;
-    int fsize;
     int i;
 
     cout << "Agregar puesto de trabajo" << endl;
@@ -426,9 +424,58 @@ void agregarPuestos(fstream &fPuestos, fstream &fDepartamento)
     }
 }
 
-void modificarPuestos(fstream &fPuestos)
+void modificarPuestos(fstream &fPuestos, fstream &fDepartamento)
 {
+    Puestos puesto;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int found     = 0;
+    int registros = -1;
 
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fPuestos.seekg (0, ios::end);
+    fsize = fPuestos.tellg();
+
+    cout << endl;
+    cout << "Modificar puesto" << endl;
+    cout << "----------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(Puestos);
+    while ( i < registros || found ) {
+        fPuestos.seekg (i * sizeof(Puestos));
+        fPuestos.read(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+        if ( puesto.estado && (strcmp(temp.c_str(),puesto.codigo) == 0) ) {
+            found = 1;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
+
+    if (found) {
+        cout << "Para modificar ingrese el nuevo valor, para no modificar deje vacío." << endl;
+        cout << "Codigo (\"" << puesto.codigo << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(puesto.codigo,temp.c_str(), sizeof(puesto.codigo));
+            puesto.codigo[sizeof(puesto.codigo)-1] = '\0';
+        }
+        cout << "Descripción (\"" << puesto.descripcion << "\"): ";
+        getline(cin,temp);
+        if(temp.length()){
+            strncpy(puesto.descripcion, temp.c_str(), sizeof(puesto.descripcion));
+            puesto.descripcion[sizeof(puesto.descripcion)-1] = '\0';
+        }
+        cout << "Departamento: " << buscarDepartamentos(fDepartamento, string(puesto.departamento)).nombre << endl << endl;
+
+        fPuestos.seekg (i * sizeof(Puestos));
+        fPuestos.write(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+        cout << "Datos escritos" << endl << endl;
+    }
 }
 
 void eliminarPuestos(fstream &fPuestos)
@@ -459,7 +506,7 @@ void menuPuestos (fstream &fPuestos, fstream &fDepartamento)
                 agregarPuestos(fPuestos, fDepartamento);
                 break;
             case 3: // Modificar
-                modificarPuestos(fPuestos);
+                modificarPuestos(fPuestos, fDepartamento);
                 break;
             case 4: // Eliminar
                 eliminarPuestos(fPuestos);
