@@ -480,6 +480,37 @@ void modificarPuestos(fstream &fPuestos, fstream &fDepartamento)
 
 void eliminarPuestos(fstream &fPuestos)
 {
+    Puestos puesto;
+    string temp;
+    int fsize;
+    int i         = 0;
+    int registros = -1;
+
+    // Limpia el bufffer de entrada para poder leeer cadenas
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    fPuestos.seekg (0, ios::end);
+    fsize = fPuestos.tellg();
+
+    cout << endl;
+    cout << "Eliminar puesto" << endl;
+    cout << "---------------" << endl;
+    cout << "Código: ";
+    getline(cin,temp);
+
+    registros = fsize / sizeof(Puestos);
+    while ( i < registros ) {
+        fPuestos.seekg (i * sizeof(Puestos));
+        fPuestos.read(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+        if ( puesto.estado && (strcmp(temp.c_str(),puesto.codigo) == 0) ) {
+            puesto.estado = 0;
+            fPuestos.seekg (i * sizeof(Puestos));
+            fPuestos.write(reinterpret_cast<char *>(&puesto), sizeof(Puestos));
+            cout << "Registro eliminado" << endl << endl;
+            break; // Hasta aqui, salir del ciclo
+        }
+        i++;
+    }
 }
 
 void menuPuestos (fstream &fPuestos, fstream &fDepartamento)
